@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation";
 
 export default async function DeletePage({
   params,
@@ -9,6 +10,7 @@ export default async function DeletePage({
   params: { table: string; id: string };
 }) {
   const supabase = createClient()
+  const router = useRouter()
   const handleDelete = async () => {
     const { data, error } = await supabase
       .from(params.table)
@@ -16,7 +18,7 @@ export default async function DeletePage({
       .eq(params.table === "products" ? "gtin" : "id", params.id);
     if (error) throw error;
     alert(`Deleted ${params.id} from ${params.table}`);
-
+    router.push(`/dashboard/${params.table}/1`);
   }
   return (
     <div>
@@ -33,7 +35,7 @@ export default async function DeletePage({
         <CardFooter className="flex justify-center">
           <Button
             className="border"
-            onClick={() => window.history.back()}
+            onClick={() => router.push(`/dashboard/${params.table}/1`)}
           >
             No
           </Button>
