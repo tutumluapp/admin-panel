@@ -52,9 +52,11 @@ const TableRowComponent = (row: Record<string, any>, table: string) => {
             Edit
           </Button>
         </Link>
-        <Button size="sm" variant="secondary">
-          Delete
-        </Button>
+        <Link title="Delete" href={`/dashboard/${table}/delete/${table === "products" ? row["gtin"] : row["id"]}`}>
+          <Button size="sm" variant="secondary">
+            Delete
+          </Button>
+        </Link>
       </TableCell>
     </TableRow>
   );

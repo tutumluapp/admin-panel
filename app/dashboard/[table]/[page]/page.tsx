@@ -28,7 +28,7 @@ export default async function Table({
     const { data, error } = await supabase
       .from(params.table)
       .select("*")
-      .range(start, end).order(pk, { ascending: true });
+      .range(start, end);
     if (error) throw error;
     return data;
   };
@@ -49,7 +49,7 @@ export default async function Table({
         >
         Add new {params.table.slice(0, -1)}
       </Link>
-      <TableComponent rows={rows} columns={columns} table={params.table} />
+      <TableComponent rows={rows} columns={columns} table={params.table}/>
       {total_number ? (
         <PaginationComponent
           page={page}

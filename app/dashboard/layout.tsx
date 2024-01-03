@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="p-5 border-r border-r-foreground/10">
         <Sidebar />
       </div>
-      <div className="flex-grow p-5 items-center border border-blue-600 space-y-4">
+      <div className="flex-grow p-5 items-center space-y-4">
         <Navbar />
         {children}
         <Footer />
