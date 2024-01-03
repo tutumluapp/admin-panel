@@ -2,6 +2,7 @@ import { PaginationComponent } from "@/components/pagination";
 import TableComponent from "@/components/ui/TableComponent";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 export default async function Table({
   params,
@@ -11,6 +12,7 @@ export default async function Table({
   const page = parseInt(params.page) || 1;
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
+  const pk = params.table === "products" ? "gtin" : "id";
 
   const getSchema = async (): Promise<any[]> => {
     const { data, error } = await supabase.rpc("get_types", {
@@ -26,7 +28,7 @@ export default async function Table({
     const { data, error } = await supabase
       .from(params.table)
       .select("*")
-      .range(start, end);
+      .range(start, end).order(pk, { ascending: true });
     if (error) throw error;
     return data;
   };
@@ -41,6 +43,12 @@ export default async function Table({
       : await getSchema();
   return (
     <div className="">
+      <Link
+        href={`/dashboard/${params.table}/add`}
+        className="py-2 px-3 flex items-center justify-center rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+        >
+        Add new {params.table.slice(0, -1)}
+      </Link>
       <TableComponent rows={rows} columns={columns} table={params.table} />
       {total_number ? (
         <PaginationComponent

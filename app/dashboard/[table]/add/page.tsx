@@ -13,58 +13,57 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { mapSchemaTypeToHTMLInput } from "@/utils/supabase/helpers";
 
 export default function EditPage({
   params,
 }: {
-  params: { table: string; id: string };
+  params: { table: string };
 }) {
   const supabase = createClient();
   const router = useRouter();
   const pk = params.table === "products" ? "gtin" : "id";
-  const [rowData, setRowData] = useState<Record<string, string>>({});
+  const [schema, setSchema] = useState<Record<string, string>[]>([]);
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(true);
 
   // Handle input change
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setRowData({ ...rowData, [id]: value });
+    setFormData({ ...formData, [id]: value });
   };
-
-  const getRowdata = useCallback(async () => {
-    try {
-      const { data, error } = await supabase
-      .from(params.table)
-      .select("*")
-      .eq(pk, params.id)
-      .limit(1)
-      .single();
-      if (error) throw error;
-      setRowData(data);
-      if (data?.length === 0) return <h2>Entry Not found</h2>;
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      return <h2>Entry Not found</h2>;
-    }
-  }, [params.table, params.id, supabase]);
 
   // Handle form submission
   const handleSubmit = async () => {
-    const dataToSubmit = { ...rowData };
+    const dataToSubmit = { ...formData };
     delete dataToSubmit[pk];
 
-    const { error } = await supabase
+    console.log(dataToSubmit);
+    const { data, error } = await supabase
       .from(params.table)
-      .update([dataToSubmit]).eq(pk, rowData[pk]);
+      .insert([dataToSubmit]).select();
     if (error) throw error;
-    alert("Updated successfully!");
-    router.push(`/dashboard/${params.table}`);
+    alert("Record updated successfully!");
+    router.push(`/dashboard/${params.table}/edit/${data[0][pk]}`);
   };
 
+  const getSchema = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.rpc("get_types", {
+        tname: params.table,
+      });
+      if (error) throw error;
+      if (data?.length === 0) return <h2>Table not found</h2>;
+      setSchema(data);
+      setLoading(false);
+    } catch (error) {
+      return <h2>Table not found</h2>;
+    }
+  }, [params.table, supabase]);
+
   useEffect(() => {
-    getRowdata();
-  }, [getRowdata]);
+    getSchema();
+  }, [getSchema]);
 
   if (loading) return <h2>Loading...</h2>;
 
@@ -72,27 +71,19 @@ export default function EditPage({
     <div>
       <Card className="max-w-3xl mx-auto p-8 bg-background shadow-md rounded-lg">
         <CardHeader>
-          <CardTitle>Edit {params.table.slice(0, -1)}</CardTitle>
+          <CardTitle>Add {params.table.slice(0, -1)}</CardTitle>
           <CardDescription>
-            Update the existing {params.table.slice(0, -1)} in the database.
+            Add new {params.table.slice(0, -1)} to the database.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form>
             <div className="grid gap-4">
-              {Object.keys(rowData).map((key) => {
+              {schema.map((column) => {
+                const key = column.column_name;
                 if (key === pk)
                   return (
-                    <div className="flex flex-col space-y-1.5">
-                      <Label htmlFor={key}>{key}</Label>
-                      <Input
-                        id={key}
-                        placeholder={`Enter ${key}`}
-                        type="text"
-                        defaultValue={rowData[key]}
-                        disabled
-                      />
-                    </div>
+                    null
                   );
                 return (
                   <div className="flex flex-col space-y-1.5">
@@ -100,9 +91,9 @@ export default function EditPage({
                     <Input
                       id={key}
                       placeholder={`Enter ${key}`}
-                      type="text"
+                      type={mapSchemaTypeToHTMLInput(column.data_type)}
                       onChange={handleInputChange}
-                      value={rowData[key] || ""}
+                      value={formData[key] || ""}
                     />
                   </div>
                 );
@@ -116,7 +107,7 @@ export default function EditPage({
             type="submit"
             onClick={handleSubmit}
           >
-            Save changes
+            Create {params.table.slice(0, -1)}
           </Button>
         </CardFooter>
       </Card>
