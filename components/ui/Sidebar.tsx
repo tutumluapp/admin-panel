@@ -21,17 +21,17 @@ export default function Sidebar() {
       <div className="flex flex-col items-center justify-center border-b border-b-foreground/10 h-16">
         <a href="/dashboard" className="text-2xl font-bold">Tutumlu</a>
         </div>
-      <div className="flex flex-col items-center border border-red-600">
+      <div className="flex flex-col items-start">
         {tables.map((table) => (
           <a
             key={table.title}
             href={table.href}
-            className="flex items-center justify-start w-20 h-12 gap-2 border border-red-300 rounded-xl hover:bg-gray-200"
+            className="flex items-center justify-start w-full h-12 gap-2 rounded-xl hover:bg-gray-200"
           > 
-            <div className="flex-1 border items-center justify-center">
+            <div className="flex-1 items-center justify-center">
               {table.icon}
             </div>
-            <span className="flex-1 border text-m">{table.title}</span>
+            <span className="flex-1 text-m">{table.title}</span>
           </a>
         ))}
       </div>
