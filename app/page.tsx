@@ -16,15 +16,4 @@ export default async function Index() {
   } else {
     redirect("/dashboard");
   }
-
-  // TODO - get available tables from supabase
-  const tables: string[] = [
-    "users",
-    "scans",
-    "products",
-    "prices",
-    "markets",
-    "categories",
-  ];
-
 }
