@@ -37,7 +37,7 @@ export function PaginationComponent({
           <Button
             key={index}
             className={`w-8 h-8`}
-            variant={page === Math.ceil(startPage + index) ? "solid" : "outline"} // ts-ignore
+            variant={page === Math.ceil(startPage + index) ? "default" : "outline"} // ts-ignore
             onClick={() => goToPage(startPage + index)}
           >
             {Math.ceil(startPage + index)}
