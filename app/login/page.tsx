@@ -62,7 +62,7 @@ export default async function Login({
   }
 
   return (
-    <div className="flex flex-col w-full px-8 sm:max-w-md items-center justify-center gap-2">
+    <div className="flex mx-auto flex-col w-full px-8 sm:max-w-md items-center justify-center gap-2">
       <form
         className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
         action={signIn}
@@ -94,12 +94,12 @@ export default async function Login({
           className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
         >
           Sign Up
-        </button>
+        </button> */}
         {searchParams?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
             {searchParams.message}
           </p>
-        )} */}
+        )}
       </form>
     </div>
   );
