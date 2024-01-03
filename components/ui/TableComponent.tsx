@@ -1,4 +1,3 @@
-"use client";
 import {
   TableHead,
   TableRow,
@@ -8,7 +7,6 @@ import {
   Table,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
 import Link from "next/link";
 
 export default function TableComponent({
@@ -16,7 +14,7 @@ export default function TableComponent({
   columns,
   table,
 }: {
-  rows: any[];
+  rows: Record<string, any>[];
   columns: any[];
   table: string;
 }) {
@@ -31,24 +29,25 @@ export default function TableComponent({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row) => TableRowComponent(Object.values(row), table))}
+        {rows.map((row) => TableRowComponent(row, table))}
       </TableBody>
     </Table>
   );
 }
 
-const TableRowComponent = (values: any[], table: string) => {
+const TableRowComponent = (row: Record<string, any>, table: string) => {
+  const values = Object.values(row);
   return (
-    <TableRow key={`${table}-${values[0]}`}>
+    <TableRow key={`${table}-${table === "products" ? row["gtin"] : row["id"]}`}>
       {values.map((value, idx) => {
         if (idx === 0)
-          return <TableCell className="font-medium">{value}</TableCell>;
+          return <TableCell key={value} className="font-medium">{value}</TableCell>;
         if (idx === values.length - 1)
-          return <TableCell className="text-right">{value}</TableCell>;
+          return <TableCell key={value} className="text-right">{value}</TableCell>;
         return <TableCell key={value}>{value}</TableCell>;
       })}
       <TableCell className="text-center space-x-2">
-        <Link title="Edit" href={`/dashboard/${table}/edit/${values[0]}`}>
+        <Link title="Edit" href={`/dashboard/${table}/edit/${table === "products" ? row["gtin"] : row["id"]}`}>
           <Button size="sm" variant="outline">
             Edit
           </Button>
